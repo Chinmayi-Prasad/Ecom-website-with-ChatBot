@@ -1,56 +1,99 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+		<style>
+				ul {
+					list-style-type: none;
+					margin: 0;
+					padding: 0;
+					overflow: hidden;
+					background-color: #333;
+				}
+				
+				li {
+					float: left;
+					border-right:1px solid #bbb;
+				}
+				
+				li:last-child {
+					border-right: none;
+				}
+				
+				li a {
+					display: block;
+					color: white;
+					text-align: center;
+					padding: 14px 16px;
+					text-decoration: none;
+				}
+				
+				li a:hover:not(.active) {
+					background-color: #111;
+				}
+				
+				.active {
+					background-color: #4CAF50;
+				}
+				</style>
 <title>Welcome</title>
+
+<script src ="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
+
 <link rel="stylesheet" href={{ url_for('static', filename='css/home.css') }} />
 <link rel="stylesheet" href={{ url_for('static', filename='css/topStyle.css') }} />
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/bootstrap4/bootstrap.min.css')}}">
+<link href="{{url_for('static', filename='plugins/fontawesome-free-5.0.1/css/fontawesome-all.css')}}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='plugins/OwlCarousel2-2.2.1/owl.carousel.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='plugins/OwlCarousel2-2.2.1/owl.theme.default.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='plugins/OwlCarousel2-2.2.1/animate.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/main_styles.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/responsive.css')}}">
 </head>
 <body>
-<div id="title">
-	<a href="/">
-		<img id="logo" src= {{ url_for('static', filename='images/logo.png') }} />
-	</a>
-	<form>
-		<input id="searchBox" type="text" name="searchQuery">
-		<input id="searchButton" type="submit" value="Search">
-	</form>
 
-	{% if not loggedIn %}
-	<div id="signInButton">
-		<a class="link" href="/loginForm">Sign In</a>
-	</div>
-	{% else %}
-	<div class="dropdown">
-		<button class="dropbtn">Hello, <br>{{firstName}}</button>
-		<div class="dropdown-content">
-			<a href="/account/orders">Your orders</a>
-			<a href="/account/profile">Your profile</a>
-			<hr>
-			<a href="/logout">Sign Out</a>
+
+	<div id="title">
+		<a href="/">
+			<img id="logo" src= {{ url_for('static', filename='images/logo.png') }} />
+		</a>
+	
+		{% if not loggedIn %}
+		<div id="signInButton">
+			<a class="link" href="/loginForm">Sign In</a>
+		</div>
+		{% else %}
+		<div class="dropdown">
+			<button class="dropbtn">Hello, <br>{{firstName}}</button>
+			<div class="dropdown-content">
+				<a href="/logout">Sign Out</a>
+			</div>
+		</div>
+		{% endif %}
+		<div id="kart">
+			<a class="link" href="/cart">
+				<img src={{url_for('static', filename='images/shoppingCart.png')}} id="cartIcon" />
+				CART {{noOfItems}}
+			</a>
 		</div>
 	</div>
-	{% endif %}
-	<div id="kart">
-		<a class="link" href="/cart">
-			<img src={{url_for('static', filename='images/shoppingCart.png')}} id="cartIcon" />
-			CART {{noOfItems}}
-		</a>
-	</div>
-</div>
-<div class="display">
-	<div class="displayCategory">
-		<h2>Shop by Category: </h2>
-		<ul>
-			{% for row in categoryData %}
-			<li><a href="/displayCategory?categoryId={{row[0]}}">{{row[1]}}</a></li>
-			{% endfor %}
-		</ul>
-	</div>
+
+
+
+
+<div class="display" style="color:black; align-content:center; ">
+		<div class="displayCategory">
+				<h2>Shop by Category: </h2>
+				<p>
+					{% for row in categoryData %}
+					<a href="/displayCategory?categoryId={{row[0]}}" style="border: black; border-radius: 4px; background-color: #333; margin-right:55px;  margin-left: 30px; font-size:35px; color:whitesmoke">{{row[1]}}</a>
+					{% endfor %}
+				</p>
+			<div>
 	<div>
-		<h2>Items</h2>
+		<h2>Shop By Items:</h2>
 		{% for data in itemData %}
-		<table>
-			<tr id="productName">
+		<table style="color:black;">
+			<tr id="productName" >
 				{% for row in data %}
 				<td>
 					{{row[1]}}
@@ -61,7 +104,7 @@
 				{% for row in data %}
 				<td>
 					<a href="/productDescription?productId={{row[0]}}">
-						<img src={{ url_for('static', filename='uploads/' + row[4]) }} id="itemImage" />
+					<img src={{url_for('static', filename='uploads/'+row[2]) }} id="productImage"   style = "width:240px; height:260px;"  />
 					</a>
 				</td>
 				{% endfor %}
@@ -69,7 +112,7 @@
 			<tr id="productPrice">
 				{% for row in data %}
 				<td>
-					${{row[2]}}
+					{{row[3]}}
 				</td>
 				{% endfor %}
 			</tr>
@@ -77,6 +120,79 @@
 		{% endfor %}
 	</div>
 </div>
+
+
+<script type="text/javascript">
+	function add_Bot(){
+
+	var req = new XMLHttpRequest();
+	usr_req = document.getElementById("usr_req").value;
+	req.open('POST', '/chatbot' , true);
+	req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+	req.send("usr_req = " + usr_req)
+	}
+
+</script>
+
+
+<footer class="footer">
+		<div class="container">
+			<div class="row">
+
+				<!-- Footer About -->
+
+				<div class="col-lg-3 footer_col">
+					<div class="footer_col_title">
+						<div class="logo_container">
+							<a href="#">
+								<div class="logo">
+									<span>Ecommerce</span>
+								</div>
+							</a>
+						</div>
+					</div>
+					
+					<div class="footer_about">
+						<div style="color:white">  
+							We support sustainability in order to enable a positive carbon footprint 
+							- Pepperfry has tied up with the NGO Grow-Trees to give back to the environment.</div>
+					</div>
+				</div>
+
+				<!-- Footer Useful Links -->
+
+				<div class="col-lg-3 footer_col">
+					<div class="footer_col_title">Ask your questions:</div>
+					<div id="outer" style = "border:2px solid black;
+						 vertical-align: right;">
+						<div id="innerbot" style = "border: 1px dotted black">
+						<form action="/chatbot" id="chat_form" method="post">
+						<input id="usr_req" name="usr_req"  type="text" value="ANY QUERIES? ASK ME!!" required="required">
+						<button onclick="add_Bot()" type="submit" class="estate_contact_send_btn trans_200" value="Submit"> SEND <br></button>
+						</form>
+
+					</div>
+					</div>
+				</div>
+
+				<!-- Footer Contact Form -->
+				
+				<!-- Footer Contact Info -->
+
+				<div class="col-lg-3 footer_col">
+							<div class="contact_info_text">4127 Raoul Wallenber 45b-c Gibraltar</div>
+							<div class="contact_info_text">2556-808-8613</div>
+							<div class="contact_info_text">contactme@gmail.com</div>
+							<div class="contact_info_text">www.colorlib.com</div>
+				</div>
+
+			</div>
+		</div>
+	</footer>
+
+
+
+
 </body>
 </html>
 
