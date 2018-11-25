@@ -1,6 +1,10 @@
 from flask import *
 import sqlite3, hashlib, os
 from werkzeug.utils import secure_filename
+import ChatBot
+from flask import jsonify, request
+#from gevent.wsgi import WSGIServer
+
 
 app = Flask(__name__)
 app.secret_key = 'random string'
@@ -24,17 +28,40 @@ def getLoginDetails():
     conn.close()
     return (loggedIn, firstName, noOfItems)
 
-@app.route("/")
+@app.route("/",methods=['POST','GET'])
 def root():
+    bot_resp = ["blank",]
     loggedIn, firstName, noOfItems = getLoginDetails()
     with sqlite3.connect('database.db') as conn:
         cur = conn.cursor()
-        cur.execute('SELECT productId, name, price, description, image, stock FROM products')
+        cur.execute('SELECT productId, name,image, price, description, stock FROM products')
         itemData = cur.fetchall()
         cur.execute('SELECT categoryId, name FROM categories')
         categoryData = cur.fetchall()
     itemData = parse(itemData)   
-    return render_template('home.html', itemData=itemData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
+        #return app.response_class(bot_resp)
+        #return render_template('home.html', bot_resp=bot_resp, itemData=itemData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
+    return render_template('home.html', bot_reply=bot_resp , itemData=itemData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
+
+
+@app.route("/chatbot",methods=['POST','GET'])
+def chatbot():
+    if request.method == 'POST':
+        usr_req = request.form.get('usr_req')
+        print("In the Chat bot server function", usr_req)
+        bot_resp = "Response from server"
+        #usr_req = request.json.get('usr_req')
+        print("Data is:" , usr_req)
+        #for k in data:
+        #    req = data[k]
+        r = ChatBot.ChatBot()
+        print("Calling function")
+        bot_resp = r.Chat_with_Bot(usr_req)
+        print("Bot resp is:" , bot_resp)
+    return bot_resp
+
+
+
 
 @app.route("/add")
 def admin():
@@ -252,6 +279,13 @@ def cart():
         totalPrice += row[2]
     return render_template("cart.html", products = products, totalPrice=totalPrice, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
 
+
+@app.route("/checkout")
+def checkout():
+    return render_template('checkout.html')
+
+
+
 @app.route("/removeFromCart")
 def removeFromCart():
     if 'email' not in session:
@@ -339,4 +373,6 @@ def parse(data):
     return ans
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    #http_server = WSGIServer(('', 5000), app)
+    #http_server.serve_forever()
+    app.run(debug=True,port=5000,threaded=True)

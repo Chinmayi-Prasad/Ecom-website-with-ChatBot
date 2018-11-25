@@ -19,6 +19,12 @@ conn.execute('''CREATE TABLE users
 		phone TEXT
 		)''')
 
+
+conn.execute('''CREATE TABLE categories
+		(categoryId INTEGER PRIMARY KEY,
+		name TEXT
+		)''')
+
 conn.execute('''CREATE TABLE products
 		(productId INTEGER PRIMARY KEY,
 		name TEXT,
@@ -37,10 +43,7 @@ conn.execute('''CREATE TABLE kart
 		FOREIGN KEY(productId) REFERENCES products(productId)
 		)''')
 
-conn.execute('''CREATE TABLE categories
-		(categoryId INTEGER PRIMARY KEY,
-		name TEXT
-		)''')
+
 
 
 
